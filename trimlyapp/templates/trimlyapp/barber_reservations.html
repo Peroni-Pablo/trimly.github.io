@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+{% load static %}
+{% load static %}
+<head>
+    <link rel="manifest" href="{% static 'trimlyapp/manifest.json' %}">
+    <link rel="icon" href="{% static 'trimlyapp/icon-192.png' %}">
+    <meta name="theme-color" content="#317EFB">
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'trimlyapp/service-worker.js' %}");
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'trimlyapp/style.css' %}">
+</head>
+<div class="center-card">
+  <h2>Todas las reservas</h2>
+  <ul style="min-height: 250px;">
+    {% for r in reservas %}
+      <li>
+        {{ r.client }} - {{ r.date }} - {{ r.time }}
+        {% if r.accepted == None %}
+          <a href="{% url 'aceptar_reserva' r.id %}">Aceptar</a>
+          <a href="{% url 'rechazar_reserva' r.id %}">Rechazar</a>
+        {% elif r.accepted %}
+          (Aceptada)
+          <a href="{% url 'eliminar_reserva' r.id %}">Eliminar</a>
+        {% else %}
+          (Rechazada)
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  
+  <form action="{% url 'logout' %}" method="post" style="margin-top: 20px; width:100%;">
+    <form action="{% url 'logout' %}" method="post" style="margin-top: 20px; width:100%;">
+      {% csrf_token %}
+      <button type="submit" class="btn-primary">cerrar sesion</button>
+  </form>
+</div>
+
+<div style="position: absolute; top: 20px; right: 30px;">
+  <i class="fa-solid fa-gear" id="gearIcon" style="font-size:2em; color:#FFD600; cursor:pointer;"></i>
+</div>
+
+<div id="configPanel" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(34,34,34,0.85); z-index:2000; align-items:center; justify-content:center;">
+  <div style="background:#232323; color:#FFD600; padding:32px 36px; border-radius:16px; min-width:320px; max-width:90vw;">
+    <h3>Configuración de turnos</h3>
+    <form method="post" action="{% url 'cambiar_intervalo' %}">
+      {% csrf_token %}
+      <label for="intervalo">Intervalo mínimo entre turnos (minutos):</label>
+      <select name="intervalo" id="intervalo">
+        <option value="10" {% if intervalo_actual == 10 %}selected{% endif %}>10</option>
+        <option value="15" {% if intervalo_actual == 15 %}selected{% endif %}>15</option>
+        <option value="20" {% if intervalo_actual == 20 %}selected{% endif %}>20</option>
+        <option value="30" {% if intervalo_actual == 30 %}selected{% endif %}>30</option>
+        <option value="45" {% if intervalo_actual == 45 %}selected{% endif %}>45</option>
+        <option value="60" {% if intervalo_actual == 60 %}selected{% endif %}>60</option>
+      </select>
+      <button type="submit" class="btn-primary">Guardar</button>
+    </form>
+    <button onclick="document.getElementById('configPanel').style.display='none';" class="btn-primary" style="margin-top:20px;">Cerrar</button>
+  </div>
+</div>
+
+<script>
+document.getElementById('gearIcon').onclick = function() {
+    document.getElementById('configPanel').style.display = 'flex';
+};
+</script>

@@ -1,0 +1,70 @@
+{% load static %}
+{% load static %}
+<head>
+    <link rel="manifest" href="{% static 'trimlyapp/manifest.json' %}">
+    <link rel="icon" href="{% static 'trimlyapp/icon-192.png' %}">
+    <meta name="theme-color" content="#317EFB">
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'trimlyapp/service-worker.js' %}");
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'trimlyapp/style.css' %}">
+</head>
+
+<div class="center-card">
+    <h1>Bienvenido de vuelta!</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_username">usuario:</label>
+        {{ form.username }}
+        <label for="id_password">contraseña:</label>
+        <div style="position:relative;">
+            {{ form.password }}
+            <i id="eyeIcon" class="fa-solid fa-eye-slash"
+               style="
+           position:absolute;
+           right:16px;
+           top:35%;
+           transform:translateY(-50%);
+           color:#111;
+           font-size:1.2em;
+           cursor:pointer;
+           "></i>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div>
+                    <span style="color:rgb(0, 0, 0)">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <button type="submit" class="btn-primary">iniciar sesion</button>
+    </form>
+    <div class="form-link">
+        <div class="panel-title">¿Eres nuevo?</div>
+        <a href="{% url 'register' %}">
+            <button class="btn-primary">registrarse</button>
+        </a>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('id_password');
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (passwordInput) {
+        passwordInput.style.paddingRight = "2.5em";
+        eyeIcon.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        });
+    }
+});
+</script>

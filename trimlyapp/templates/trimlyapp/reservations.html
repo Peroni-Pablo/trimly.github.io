@@ -1,0 +1,111 @@
+{% load static %}
+{% load static %}
+<head>
+    <link rel="manifest" href="{% static 'trimlyapp/manifest.json' %}">
+    <link rel="icon" href="{% static 'trimlyapp/icon-192.png' %}">
+    <meta name="theme-color" content="#317EFB">
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'trimlyapp/service-worker.js' %}");
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'trimlyapp/style.css' %}">
+</head>
+
+<div class="center-card">
+
+    <h2>Mis reservas</h2>
+    <ul>
+      {% for r in reservations %}
+        <li>
+          {{ r.date }} - {{ r.time }}
+          {% if not r.accepted %}
+            <a href="{% url 'cancelar_reserva' r.id %}">Cancelar</a>
+          {% else %}
+            <span style="color:rgb(238, 255, 0); font-weight: bold;">(Aceptada)</span>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li>No tienes reservas</li>
+      {% endfor %}
+    </ul>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; position: relative; width: fit-content;">
+  <button id="btn-notificaciones" class="btn-primary" onclick="document.getElementById('panel-notificaciones').style.display='flex';">
+    Ver notificaciones
+  </button>
+  {% if notificaciones and notificaciones|length > 0 %}
+    <span style="
+      color:#FFD600;
+      font-size:1.6em;
+      font-weight:bold;
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      ">
+      &#33;
+    </span>
+  {% endif %}
+</div>
+
+    <div id="panel-notificaciones"
+     style="display:{% if abrir_panel %}flex{% else %}none{% endif %};
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(34,34,34,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;">
+  <div style="background: #232323; color: #FFD600; border-left: 8px solid #FFD600; box-shadow: 0 2px 24px rgba(0,0,0,0.18); padding: 32px 36px 24px 36px; border-radius: 16px; width: 100%; max-width: 600px; min-width: 320px; display: flex; flex-direction: column; align-items: flex-start;">
+    {% if notificaciones %}
+      <ul style="width: 100%; margin: 0 0 24px 0;">
+        {% for n in notificaciones %}
+          <li style="position:relative; white-space: normal; margin-bottom: 18px; font-size: 1.15em; line-height: 1.5; padding-right: 40px; border-bottom: 1px solid #444;">
+            {{ n.mensaje }}
+            <a href="{% url 'borrar_notificacion' n.id %}" style="position:absolute; right:10px; top:8px; color:red; text-decoration:none; font-weight:bold; font-size:1.2em; background:transparent;">×</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div style="white-space: normal; margin-bottom: 24px; font-size: 1.15em;">No tienes notificaciones nuevas.</div>
+    {% endif %}
+    <button onclick="document.getElementById('panel-notificaciones').style.display='none';"
+            class="btn-primary"
+            style="margin: 0 auto; display: block; width: 220px; font-size: 1.25em; font-weight: bold;">
+      Cerrar
+    </button>
+  </div>
+  {% if messages %}
+    {% for message in messages %}
+      <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+    <h3>Haz una reserva</h3>
+    <form method="post" style="width:100%;">
+      {% csrf_token %}
+      <label for="id_date">dia:</label>
+      {{ form.date }}
+      <label for="id_time">hora:</label>
+      {{ form.time }}
+      <button type="submit" class="btn-primary">Reservar</button>
+      
+      {% if messages %}
+        {% for message in messages %}
+          <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+    </form>
+
+    <form action="{% url 'logout' %}" method="post" style="margin-top: 20px; width:100%;">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary">cerrar sesion</button>
+    </form>
+</div>

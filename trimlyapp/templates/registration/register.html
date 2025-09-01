@@ -1,0 +1,132 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+{% load static %}
+{% load static %}
+<head>
+    <link rel="manifest" href="{% static 'trimlyapp/manifest.json' %}">
+    <link rel="icon" href="{% static 'trimlyapp/icon-192.png' %}">
+    <meta name="theme-color" content="#317EFB">
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'trimlyapp/service-worker.js' %}");
+    }
+    </script>
+    <link rel="stylesheet" href="{% static 'trimlyapp/style.css' %}">
+</head>
+
+<link rel="stylesheet" href="{% static 'trimlyapp/style.css' %}">
+
+<div class="center-card">
+    <h1>Registrate</h1>
+    <form method="post" style="width:100%;">
+        {% csrf_token %}
+        <label for="id_username">Usuario:</label>
+        {{ form.username }}
+
+        <label for="id_password1">Contraseña:</label>
+        <div style="position:relative;">
+            {{ form.password1 }}
+            <i id="eyeIcon1" class="fa-solid fa-eye-slash"
+               style="position:absolute; right:16px; top:35%; transform:translateY(-50%); color:#111; font-size:1.2em; cursor:pointer;"></i>
+        </div>
+        {% if form.password1.errors %}
+            <div style="color: #ff0000; font-weight: bold; margin-bottom: 10px;">
+                {% for error in form.password1.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <label for="id_password2">Confirme la contraseña:</label>
+        <div style="position:relative;">
+            {{ form.password2 }}
+            <i id="eyeIcon2" class="fa-solid fa-eye-slash"
+               style="position:absolute; right:16px; top:35%; transform:translateY(-50%); color:#111; font-size:1.2em; cursor:pointer;"></i>
+        </div>
+        <p>su contraseña debe tener un minimo 8 caracteres combinando letras y números</p>
+
+            {% if form.password2.errors %}
+                <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+                    {% for error in form.password2.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        <label for="role">Soy:</label>
+        <select name="role" id="role-select">
+            <option value="cliente">Cliente</option>
+            <option value="barbero">Barbero</option>
+        </select>
+
+        <div id="clave-barbero-div" style="display:none; margin-top:10px;">
+            <label for="clave_barbero">Clave de acceso para barberos:</label>
+            <input type="password" name="clave_barbero" id="clave_barbero" style="width:100%;" />
+        </div>
+
+        {% if error_clave %}
+            <div style="color: red; font-weight: bold; margin-bottom: 10px;">
+                {{ error_clave }}
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn-primary">
+            registrarse
+        </button>
+    </form>
+    <div class="form-link">
+        ¿ya tienes una cuenta?
+        <a href="{% url 'login' %}">
+            <button class="btn-primary">iniciar sesion</button>
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar campo clave barbero
+    const roleSelect = document.getElementById('role-select');
+    const claveDiv = document.getElementById('clave-barbero-div');
+    if (roleSelect) {
+        function toggleClave() {
+            claveDiv.style.display = (roleSelect.value === 'barbero') ? 'block' : 'none';
+        }
+        roleSelect.addEventListener('change', toggleClave);
+        toggleClave(); // Ejecutar al cargar por si el form se reenvía
+    }
+
+    // Para el primer campo de contraseña
+    const passwordInput1 = document.getElementById('id_password1');
+    const eyeIcon1 = document.getElementById('eyeIcon1');
+    if (passwordInput1) {
+        passwordInput1.style.paddingRight = "2.5em";
+        eyeIcon1.addEventListener('click', function() {
+            if (passwordInput1.type === 'password') {
+                passwordInput1.type = 'text';
+                eyeIcon1.classList.remove('fa-eye-slash');
+                eyeIcon1.classList.add('fa-eye');
+            } else {
+                passwordInput1.type = 'password';
+                eyeIcon1.classList.remove('fa-eye');
+                eyeIcon1.classList.add('fa-eye-slash');
+            }
+        });
+    }
+    // Para el segundo campo de contraseña
+    const passwordInput2 = document.getElementById('id_password2');
+    const eyeIcon2 = document.getElementById('eyeIcon2');
+    if (passwordInput2) {
+        passwordInput2.style.paddingRight = "2.5em";
+        eyeIcon2.addEventListener('click', function() {
+            if (passwordInput2.type === 'password') {
+                passwordInput2.type = 'text';
+                eyeIcon2.classList.remove('fa-eye-slash');
+                eyeIcon2.classList.add('fa-eye');
+            } else {
+                passwordInput2.type = 'password';
+                eyeIcon2.classList.remove('fa-eye');
+                eyeIcon2.classList.add('fa-eye-slash');
+            }
+        });
+    }
+});
+</script>
