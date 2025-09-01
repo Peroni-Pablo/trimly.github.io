@@ -1,4 +1,3 @@
-
 Usage:   
   pip <command> [options]
 
@@ -75,3 +74,7 @@ General Options:
   --resume-retries <resume_retries>
                               Maximum attempts to resume or restart an
                               incomplete download. (default: 5)
+
+Django>=5.1,<6.0
+gunicorn
+whitenoise
