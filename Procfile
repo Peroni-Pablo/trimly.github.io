@@ -1,2 +1,2 @@
-web: gunicorn trimlyapp.wsgi
+web: gunicorn trimlyproject.wsgi
 
